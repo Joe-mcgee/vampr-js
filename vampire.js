@@ -9,26 +9,23 @@ function climb(vampire, rank) {
 
 function ancestorMatch(older, younger) {
   const baseYounger = younger;
-  console.log(0, baseYounger.name)
   return ancestorMatchLogic(older, younger, baseYounger)
 
 }
 
 function ancestorMatchLogic(older, younger, base) {
   if (older == younger) {
-    console.log(1, older.name)
     return older
   } else {
     if (younger.creator == null) {
-      console.log(2, older.name, younger.name, base.name)
       return ancestorMatchLogic(older.creator, base, base);
     }
     else {
-      console.log(3, older.name, younger.name, base.name)
       return ancestorMatchLogic(older, younger.creator, base)
     }
   }
 }
+
 
 class Vampire {
   constructor(name, yearConverted) {
@@ -73,18 +70,45 @@ class Vampire {
 
   // Returns the vampire object with that name, or null if no vampire exists with that name
   vampireWithName(name) {
-    
-  }
+    if (name == this.name) {
+      return this;
+    }
+
+    for (let child of this.offspring) {
+      let match = child.vampireWithName(name);
+      if (match) {
+        return match;
+      }
+    }
+    return null;
+    }
+
+
 
   // Returns the total number of vampires that exist
   get totalDescendents() {
-    
+    let total = 0;
+
+    for (let child of this.offspring) {
+      total += child.totalDescendents + 1
+    }
+    return total
   }
 
   // Returns an array of all the vampires that were converted after 1980
   get allMillennialVampires() {
-    
+    let output = [];
+
+    if (this.yearConverted > 1980) {
+      output.push(this)
+    }
+
+    for (let child of this.offspring) {
+      output = output.concat(child.allMillennialVampires)
+    }
+    return output
   }
+
 
   /** Stretch **/
 
